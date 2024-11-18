@@ -15,9 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+import sys
+import os
+
+# Adicione o caminho do frontend ao sys.path para que possa ser importado
+frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Projeto-Integrador-Frontend'))
+sys.path.append(frontend_path)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('', include('frontend.urls'))
+    path('', include('ProjetoIntegradorFrontend.urls')),  # Caminho para as URLs do frontend
 ]
