@@ -5,19 +5,19 @@ from django.conf import settings
 
 class Scene(models.Model):
     name = models.CharField(max_length=255, default="")
-    url_background = models.CharField(max_length=255, default="")
-    url_text_box = models.CharField(max_length=255, default="")
-    url_character_left = models.CharField(max_length=255, default="")
-    url_character_middle = models.CharField(max_length=255, default="")
-    url_character_right = models.CharField(max_length=255, default="")
-    text = models.CharField(max_length=255, default="")
+    url_background = models.CharField(max_length=255, default="", null=True)
+    url_text_box = models.CharField(max_length=255, default="", null=True)
+    url_character_left = models.CharField(max_length=255, default="", null=True)
+    url_character_middle = models.CharField(max_length=255, default="", null=True)
+    url_character_right = models.CharField(max_length=255, default="", null=True)
+    text = models.CharField(max_length=255, default="", null=True)
 
 class Project(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default='', on_delete=models.CASCADE, related_name="project")
     name = models.CharField(max_length=255)
     private = models.BooleanField(null=False, default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     first_scene = models.OneToOneField(Scene, default='',on_delete=models.CASCADE)
 
 class Choice(models.Model):
