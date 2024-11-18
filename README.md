@@ -32,7 +32,7 @@ Para configurar e aplicar as migrações do banco de dados:
 
 ### Atualização do Submódulo Frontend
 
-Caso o frontend esteja configurado como um submódulo, use o comando abaixo para inicializá-lo e atualizá-lo:
+O frontend está configurado como um submódulo, use o comando abaixo para inicializá-lo e atualizá-lo:
 
 ```bash
 git submodule update --init --recursive
