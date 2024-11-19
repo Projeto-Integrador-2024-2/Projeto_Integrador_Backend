@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer
+from rest_framework import viewsets
+from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer
 from .models import Project, Scene, Choice
+from django.views.generic import ListView
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 
@@ -11,7 +14,19 @@ from .models import Project, Scene, Choice
 # generics.DeleteAPIView (Para Deletar)
 # generics.RetrieveUpdateDestroyAPIView (Para Td)
 
+# User
+
+User = get_user_model()  # Obtém o modelo de usuário real definido em settings.AUTH_USER_MODEL
+
+class UserListView(generics.ListAPIView): 
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
 # Project
+
+class ProjectViewSet(viewsets.ModelViewSet): #Para endpoint
+    serializer_class = ProjectSerializer
+    queryset = Project.objects.all()
 
 class ProjectView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
@@ -35,6 +50,10 @@ class ProjectDeleteView(generics.DestroyAPIView):
 
 # Scenes
 
+class SceneViewSet(viewsets.ModelViewSet): #Para endpoint
+    serializer_class = SceneSerializer
+    queryset = Scene.objects.all()
+
 class SceneView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Scene.objects.all()
     serializer_class = SceneSerializer
@@ -57,6 +76,10 @@ class SceneDeleteView(generics.DestroyAPIView):
 
 # Choice
 
+class ChoiceViewSet(viewsets.ModelViewSet): #Para endpoint
+    serializer_class = ChoiceSerializer
+    queryset = Choice.objects.all()
+
 class ChoiceView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
@@ -76,3 +99,5 @@ class ChoiceUpdateView(generics.UpdateAPIView):
 class ChoiceDeleteView(generics.DestroyAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
+
+#

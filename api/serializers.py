@@ -1,5 +1,14 @@
 from rest_framework import serializers
 from .models import Choice, Project, Scene
+from django.conf import settings
+from django.contrib.auth import get_user_model
+
+User = get_user_model()  # Obtém o modelo de usuário real definido em settings.AUTH_USER_MODEL
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User  # Define o modelo de usuário
+        fields = ('id', 'username', 'password')  
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
