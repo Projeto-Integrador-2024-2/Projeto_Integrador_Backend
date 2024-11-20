@@ -9,6 +9,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User  # Define o modelo de usuário
         fields = ('id', 'username', 'password')  
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User.objects.create(**validated_data)
+        user.set_password(password)  # Garante que a senha será armazenada com hash
+        user.save()
+        return user
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:

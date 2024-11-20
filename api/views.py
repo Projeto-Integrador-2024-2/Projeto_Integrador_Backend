@@ -22,6 +22,10 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+class UserCreateView(generics.CreateAPIView): 
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
 # Project
 
 class ProjectViewSet(viewsets.ModelViewSet): #Para endpoint

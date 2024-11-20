@@ -2,7 +2,7 @@ from django.urls import path
 from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet
-from .views import UserListView
+from .views import UserListView, UserCreateView
 
 from rest_framework.routers import DefaultRouter
 
@@ -28,7 +28,9 @@ urlpatterns = [
     path('update/choice', ChoiceUpdateView.as_view()),
     path('delete/choice', ChoiceDeleteView.as_view()),
 
-    path('user/', UserListView.as_view(), name='user_list'),
+    path('list/user', UserListView.as_view(), name='user_list'),
+    path('create/user', UserCreateView.as_view(), name='user_list'),
+
 
     # obtenção do token JWT
     path('token/', TokenObtainPairView.as_view(), name='token_pair'),
