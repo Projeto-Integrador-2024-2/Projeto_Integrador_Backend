@@ -18,11 +18,23 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()  # Obtém o modelo de usuário real definido em settings.AUTH_USER_MODEL
 
-class UserListView(generics.ListAPIView): 
+class UserView(generics.RetrieveUpdateDestroyAPIView): 
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 class UserCreateView(generics.CreateAPIView): 
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+class UserListView(generics.ListAPIView): 
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+class UserUpdateView(generics.UpdateAPIView): 
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+class UserDeleteView(generics.DestroyAPIView): 
     serializer_class = UserSerializer
     queryset = User.objects.all()
 

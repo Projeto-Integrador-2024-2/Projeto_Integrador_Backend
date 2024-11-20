@@ -2,7 +2,7 @@ from django.urls import path
 from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet
-from .views import UserListView, UserCreateView
+from .views import UserView, UserCreateView, UserListView, UserUpdateView, UserDeleteView
 
 from rest_framework.routers import DefaultRouter
 
@@ -10,6 +10,12 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
+    path('user', UserView.as_view(), name='user_list'),
+    path('create/user', UserCreateView.as_view(), name='user_list'),
+    path('list/user', UserListView.as_view(), name='user_list'),
+    path('update/user', UserUpdateView.as_view(), name='user_list'),
+    path('delete/user', UserDeleteView.as_view(), name='user_list'),
+
     path('project', ProjectView.as_view()),
     path('create/project', ProjectCreateView.as_view()),
     path('list/project', ProjectListView.as_view()),
@@ -27,10 +33,6 @@ urlpatterns = [
     path('list/choice', ChoiceListView.as_view()),
     path('update/choice', ChoiceUpdateView.as_view()),
     path('delete/choice', ChoiceDeleteView.as_view()),
-
-    path('list/user', UserListView.as_view(), name='user_list'),
-    path('create/user', UserCreateView.as_view(), name='user_list'),
-
 
     # obtenção do token JWT
     path('token/', TokenObtainPairView.as_view(), name='token_pair'),
