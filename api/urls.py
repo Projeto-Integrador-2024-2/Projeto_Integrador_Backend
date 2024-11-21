@@ -23,10 +23,10 @@ urlpatterns = [
     path('delete/project', ProjectDeleteView.as_view(), name='project_delete'),
 
     path('scene', SceneView.as_view()),
-    path('create/scene', SceneCreateView.as_view()),
+    path('create/scene', SceneCreateView.as_view(), name='scene_create'),
     path('list/scene', SceneListView.as_view(), name='scene_list'),
-    path('update/scene', SceneUpdateView.as_view()),
-    path('delete/scene', SceneDeleteView.as_view()),
+    path('update/scene', SceneUpdateView.as_view(), name='scene_update'),
+    path('delete/scene', SceneDeleteView.as_view(), name='scene_delete'),
 
     path('choice', ChoiceView.as_view()),
     path('create/choice', ChoiceCreateView.as_view()),

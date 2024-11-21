@@ -160,12 +160,37 @@ class SceneListView(generics.ListAPIView):
     serializer_class = SceneSerializer
 
 class SceneUpdateView(generics.UpdateAPIView):
-    queryset = Scene.objects.all()
-    serializer_class = SceneSerializer
+    def patch(self, request, *args, **kwargs):
+        scene_id = request.query_params.get('id')  # Pega o 'id' da query string
+        if not scene_id:
+            return Response({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            scene = Scene.objects.get(id=scene_id)
+            # Atualize os campos com os dados recebidos no request.data
+            for attr, value in request.data.items():
+                setattr(scene, attr, value)
+            scene.save()
+
+            # Serializa a instância de 'scene' para o formato JSON
+            serializer = SceneSerializer(scene)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Scene.DoesNotExist:
+            return Response({'error': 'Cena não encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 class SceneDeleteView(generics.DestroyAPIView):
-    queryset = Scene.objects.all()
-    serializer_class = SceneSerializer
+    def delete(self, request, *args, **kwargs):
+        scene_id = request.query_params.get('id')  # Pega o 'id' da query string
+        if not scene_id:
+            return JsonResponse({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            scene = Scene.objects.get(id=scene_id)
+            scene.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Scene.DoesNotExist:
+            return JsonResponse({'error': 'Cena não encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 # Choice
 
