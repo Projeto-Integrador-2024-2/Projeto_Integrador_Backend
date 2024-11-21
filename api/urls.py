@@ -29,10 +29,10 @@ urlpatterns = [
     path('delete/scene', SceneDeleteView.as_view(), name='scene_delete'),
 
     path('choice', ChoiceView.as_view()),
-    path('create/choice', ChoiceCreateView.as_view()),
-    path('list/choice', ChoiceListView.as_view()),
-    path('update/choice', ChoiceUpdateView.as_view()),
-    path('delete/choice', ChoiceDeleteView.as_view()),
+    path('create/choice', ChoiceCreateView.as_view(), name='choice_create'),
+    path('list/choice', ChoiceListView.as_view(), name='choice_list'),
+    path('update/choice', ChoiceUpdateView.as_view(), name='choice_update'),
+    path('delete/choice', ChoiceDeleteView.as_view(), name='choice_delete'),
 
     # obtenção do token JWT
     path('token/', TokenObtainPairView.as_view(), name='token_pair'),

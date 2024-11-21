@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
+
     class Meta:
         model = Project
         fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene']
@@ -44,6 +45,31 @@ class SceneSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'url_background', 'url_text_box', 'url_character_left', 'url_character_middle', 'url_character_right', 'text')
 
 class ChoiceSerializer(serializers.ModelSerializer):
+    from_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
+    to_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), allow_null=True, required=False)
+
     class Meta:
         model = Choice
-        fields = ('id', 'text', 'from_scene', 'to_scene')
+        fields = ['id', 'text', 'from_scene', 'to_scene']
+        read_only_fields = ['id']
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def validate_from_scene(self, value):
+        # Valida se a cena de origem existe
+        if not Scene.objects.filter(id=value.id).exists():
+            raise serializers.ValidationError("A cena de origem não foi encontrada.")
+        return value
+
+    def validate_to_scene(self, value):
+        # Valida se a cena de destino existe, se fornecida
+        if value and not Scene.objects.filter(id=value.id).exists():
+            raise serializers.ValidationError("A cena de destino não foi encontrada.")
+        return value
+
+    def validate_text(self, value):
+        # Verifica se o texto não está vazio ou apenas com espaços
+        if not value.strip():
+            raise serializers.ValidationError("O texto da escolha não pode estar vazio.")
+        return value

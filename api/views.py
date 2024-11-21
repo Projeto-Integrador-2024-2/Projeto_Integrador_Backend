@@ -194,7 +194,8 @@ class SceneDeleteView(generics.DestroyAPIView):
 
 # Choice
 
-class ChoiceViewSet(viewsets.ModelViewSet): #Para endpoint
+# Choice
+class ChoiceViewSet(viewsets.ModelViewSet):  # Para endpoints REST completos (CRUD)
     serializer_class = ChoiceSerializer
     queryset = Choice.objects.all()
 
@@ -206,16 +207,61 @@ class ChoiceCreateView(generics.CreateAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
 
+    def perform_create(self, serializer):
+        # Apenas salva o objeto sem restrições adicionais
+        serializer.save()
+
 class ChoiceListView(generics.ListAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
 
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import generics
+from .models import Choice
+from .serializers import ChoiceSerializer
+
 class ChoiceUpdateView(generics.UpdateAPIView):
-    queryset = Choice.objects.all()
-    serializer_class = ChoiceSerializer
+    def patch(self, request, *args, **kwargs):
+        choice_id = request.query_params.get('id')  # Pega o 'id' da query string
+        if not choice_id:
+            return Response({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            choice = Choice.objects.get(id=choice_id)
+
+            # Atualiza os campos com os dados recebidos no request.data
+            for attr, value in request.data.items():
+                if attr == "from_scene" or attr == "to_scene":
+                    # Se o campo for um relacionamento (como 'from_scene' ou 'to_scene'), busque a instância
+                    try:
+                        value = Scene.objects.get(id=value)  # Obtém a instância de Scene com o ID fornecido
+                    except Scene.DoesNotExist:
+                        return Response({'error': f"Cena com ID {value} não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+                
+                setattr(choice, attr, value)  # Atribui o valor ao campo da escolha
+
+            choice.save()
+
+            # Serializa a instância de 'choice' para o formato JSON
+            serializer = ChoiceSerializer(choice)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Choice.DoesNotExist:
+            return Response({'error': 'Escolha não encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 class ChoiceDeleteView(generics.DestroyAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
 
-#
+    def delete(self, request, *args, **kwargs):
+        choice_id = request.query_params.get('id')  # Pega o 'id' da query string
+        if not choice_id:
+            return JsonResponse({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            choice = Choice.objects.get(id=choice_id)
+            choice.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Choice.DoesNotExist:
+            return JsonResponse({'error': 'Escolha não encontrada'}, status=status.HTTP_404_NOT_FOUND)
