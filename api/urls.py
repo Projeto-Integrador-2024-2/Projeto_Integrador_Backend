@@ -18,9 +18,9 @@ urlpatterns = [
 
     path('project', ProjectView.as_view()),
     path('create/project', ProjectCreateView.as_view(), name='create_project'),
-    path('list/project', ProjectListView.as_view()),
-    path('update/project', ProjectUpdateView.as_view()),
-    path('delete/project', ProjectDeleteView.as_view()),
+    path('list/project', ProjectListView.as_view(), name='project_list'),
+    path('update/project', ProjectUpdateView.as_view(), name='project_update'),
+    path('delete/project', ProjectDeleteView.as_view(), name='project_delete'),
 
     path('scene', SceneView.as_view()),
     path('create/scene', SceneCreateView.as_view()),

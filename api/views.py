@@ -7,6 +7,9 @@ from .models import Project, Scene, Choice
 from django.views.generic import ListView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status
 
 # Create your views here.
 
@@ -82,14 +85,61 @@ class ProjectCreateView(generics.CreateAPIView):
 class ProjectListView(generics.ListAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+    def get_queryset(self):
+        # Retorna apenas os projetos do usuário autenticado
+        return Project.objects.filter(user=self.request.user)
 
 class ProjectUpdateView(generics.UpdateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        project_id = self.request.query_params.get('id')
+        if not project_id:
+            raise NotFound("O parâmetro 'id' é obrigatório.")
+        return get_object_or_404(self.queryset, id=project_id)
+
+    def get_queryset(self):
+        # Retorna apenas os projetos pertencentes ao usuário autenticado
+        return Project.objects.filter(user=self.request.user)
+
+    def perform_update(self, serializer):
+        # Garantir que o projeto pertence ao usuário autenticado
+        project = self.get_object()
+        if project.user != self.request.user:
+            raise PermissionDenied("Você não tem permissão para modificar este projeto.")
+
+        # Pega o ID da nova cena (first_scene) caso seja passado no request
+        first_scene_id = self.request.data.get('first_scene')
+
+        # Verifica se o ID foi passado e se a cena existe
+        if first_scene_id:
+            first_scene = Scene.objects.get(id=first_scene_id)
+            serializer.save(first_scene=first_scene)
+        else:
+            # Se o campo first_scene não for passado, apenas atualiza o projeto
+            serializer.save()
 
 class ProjectDeleteView(generics.DestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        project_id = self.request.query_params.get('id')
+        
+        try:
+            # Usar 'user' no lugar de 'owner'
+            project = Project.objects.get(id=project_id, user=request.user)  # Altere 'owner' para 'user'
+            project.delete()  # Deletar o projeto
+            return Response(status=status.HTTP_204_NO_CONTENT)  # Retornar sucesso
+        except Project.DoesNotExist:
+            return Response({'detail': 'Projeto não encontrado ou você não tem permissão para deletá-lo.'}, 
+                            status=status.HTTP_404_NOT_FOUND)
+
 
 # Scenes
 
