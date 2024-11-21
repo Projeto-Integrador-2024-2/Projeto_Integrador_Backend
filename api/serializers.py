@@ -18,9 +18,25 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class ProjectSerializer(serializers.ModelSerializer):
+    first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
     class Meta:
         model = Project
-        fields = ('id', 'user', 'name', 'private', 'created_at', 'updated_at', 'first_scene')
+        fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+    
+    def validate_first_scene(self, value):
+        # Verifica se a cena existe, mesmo que já seja um PrimaryKeyRelatedField
+        if not Scene.objects.filter(id=value.id).exists():
+            raise serializers.ValidationError("Cena não encontrada")
+        return value
+
+    def validate_name(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("O nome do projeto não pode estar vazio.")
+        return value
 
 class SceneSerializer(serializers.ModelSerializer):
     class Meta:

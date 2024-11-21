@@ -17,14 +17,14 @@ urlpatterns = [
     path('delete/user', UserDeleteView.as_view(), name='user_list'),
 
     path('project', ProjectView.as_view()),
-    path('create/project', ProjectCreateView.as_view()),
+    path('create/project', ProjectCreateView.as_view(), name='create_project'),
     path('list/project', ProjectListView.as_view()),
     path('update/project', ProjectUpdateView.as_view()),
     path('delete/project', ProjectDeleteView.as_view()),
 
     path('scene', SceneView.as_view()),
     path('create/scene', SceneCreateView.as_view()),
-    path('list/scene', SceneListView.as_view()),
+    path('list/scene', SceneListView.as_view(), name='scene_list'),
     path('update/scene', SceneUpdateView.as_view()),
     path('delete/scene', SceneDeleteView.as_view()),
 
