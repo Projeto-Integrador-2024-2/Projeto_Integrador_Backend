@@ -29,10 +29,3 @@ Para configurar e aplicar as migrações do banco de dados:
     ```bash
     py manage.py migrate
     ```
-
-### Atualização do Submódulo Frontend
-
-O frontend está configurado como um submódulo, use o comando abaixo para inicializá-lo e atualizá-lo:
-
-```bash
-git submodule update --init --recursive

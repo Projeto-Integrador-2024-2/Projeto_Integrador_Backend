@@ -15,7 +15,7 @@ class Scene(models.Model):
 class Project(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default='', on_delete=models.CASCADE, related_name="project")
     name = models.CharField(max_length=255)
-    private = models.BooleanField(null=False, default=False)
+    privacy = models.BooleanField(null=False, default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     first_scene = models.OneToOneField(Scene, default='',on_delete=models.CASCADE)
