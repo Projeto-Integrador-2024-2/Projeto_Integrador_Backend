@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet
+from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet
 from .views import UserView, UserCreateView, UserListView, UserUpdateView, UserDeleteView
@@ -19,6 +19,9 @@ urlpatterns = [
     path('project', ProjectView.as_view()),
     path('create/project', ProjectCreateView.as_view(), name='create_project'),
     path('list/project', ProjectListView.as_view(), name='project_list'),
+    path('list/project/<int:pk>/',
+        ProjectViewSetWithID.as_view({'get': 'retrieve'}), #Buscar Projeto por ID
+        name='project_list_ID'),
     path('update/project', ProjectUpdateView.as_view(), name='project_update'),
     path('delete/project', ProjectDeleteView.as_view(), name='project_delete'),
 

@@ -12,7 +12,7 @@ class Project(models.Model):
     first_scene = models.OneToOneField('Scene', default='', on_delete=models.CASCADE)
 
 class Scene(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='scenes')  # Relacionamento obrigatório
+    #project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='scenes')  # Relacionamento obrigatório
     name = models.CharField(max_length=255, default="")
     url_background = models.CharField(max_length=255, default="", null=True)
     url_text_box = models.CharField(max_length=255, default="", null=True)
