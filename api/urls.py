@@ -19,9 +19,7 @@ urlpatterns = [
     path('project', ProjectView.as_view()),
     path('create/project', ProjectCreateView.as_view(), name='create_project'),
     path('list/project', ProjectListView.as_view(), name='project_list'),
-    path('list/project/<int:pk>/',
-        ProjectViewSetWithID.as_view({'get': 'retrieve'}), #Buscar Projeto por ID
-        name='project_list_ID'),
+    path('list/project/<int:pk>/', ProjectViewSetWithID.as_view(), name='project_list_ID'),
     path('update/project', ProjectUpdateView.as_view(), name='project_update'),
     path('delete/project', ProjectDeleteView.as_view(), name='project_delete'),
 

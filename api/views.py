@@ -44,25 +44,6 @@ class UserDeleteView(generics.DestroyAPIView):
     queryset = User.objects.all()
 
 # Project
-
-class ProjectViewSetWithID(viewsets.ModelViewSet): #Para endpoint
-    serializer_class = ProjectSerializer
-    queryset = Project.objects.all()
-    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        Retorna os detalhes de um projeto específico com base no ID fornecido.
-        """
-        # Obtém o objeto filtrando pelo ID e pelo usuário autenticado
-        queryset = self.get_queryset()
-        project = queryset.filter(id=kwargs['pk']).first()
-
-        if not project:
-            return Response({"detail": "Projeto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = self.get_serializer(project)
-        return Response(serializer.data)
     
 class ProjectViewSet(viewsets.ModelViewSet): #Para endpoint
     serializer_class = ProjectSerializer
@@ -109,6 +90,17 @@ class ProjectListView(generics.ListAPIView):
     def get_queryset(self):
         # Retorna apenas os projetos do usuário autenticado
         return Project.objects.filter(user=self.request.user)
+    
+class ProjectViewSetWithID(generics.ListAPIView): #Para endpoint
+
+    serializer_class = ProjectSerializer
+    queryset = Project.objects.all()
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+    def get_queryset(self):
+        # Obtém o ID do projeto a partir dos parâmetros da URL
+        project_id = self.kwargs.get('pk')
+        return Project.objects.filter(id=project_id)
 
 class ProjectUpdateView(generics.UpdateAPIView):
     queryset = Project.objects.all()
