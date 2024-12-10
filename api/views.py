@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import serializers
-from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer
-from .models import Project, Scene, Choice, Genre
+from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer, DescriptionSerializer
+from .models import Project, Scene, Choice, Genre, Description
 from django.views.generic import ListView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
@@ -312,3 +312,72 @@ class ChoiceDeleteView(generics.DestroyAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Choice.DoesNotExist:
             return JsonResponse({'error': 'Escolha não encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+# Description
+
+class DescriptionViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para listar, criar, atualizar e excluir descrições de usuários.
+    """
+    serializer_class = DescriptionSerializer
+    queryset = Description.objects.all()
+
+class DescriptionView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View para recuperar, atualizar ou excluir uma descrição de um usuário específico.
+    """
+    queryset = Description.objects.all()
+    serializer_class = DescriptionSerializer
+
+class DescriptionCreateView(generics.CreateAPIView):
+    """
+    View para criar uma nova descrição para um usuário.
+    """
+    queryset = Description.objects.all()
+    serializer_class = DescriptionSerializer
+
+class DescriptionListView(generics.ListAPIView):
+    """
+    View para listar todas as descrições.
+    """
+    queryset = Description.objects.all()
+    serializer_class = DescriptionSerializer
+
+class DescriptionUpdateView(generics.UpdateAPIView):
+    """
+    View para atualizar a descrição de um usuário específico.
+    """
+    def patch(self, request, *args, **kwargs):
+        description_id = request.query_params.get('id')  # Pega o 'id' da query string
+        if not description_id:
+            return Response({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            description = Description.objects.get(id=description_id)
+            # Atualize os campos com os dados recebidos no request.data
+            for attr, value in request.data.items():
+                setattr(description, attr, value)
+            description.save()
+
+            # Serializa a instância de 'description' para o formato JSON
+            serializer = DescriptionSerializer(description)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Description.DoesNotExist:
+            return Response({'error': 'Descrição não encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+class DescriptionDeleteView(generics.DestroyAPIView):
+    """
+    View para excluir uma descrição de um usuário específico.
+    """
+    def delete(self, request, *args, **kwargs):
+        description_id = request.query_params.get('id')  # Pega o 'id' da query string
+        if not description_id:
+            return JsonResponse({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            description = Description.objects.get(id=description_id)
+            description.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Description.DoesNotExist:
+            return JsonResponse({'error': 'Descrição não encontrada'}, status=status.HTTP_404_NOT_FOUND)

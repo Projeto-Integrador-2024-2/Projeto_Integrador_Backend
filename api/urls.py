@@ -3,6 +3,7 @@ from .views import GenreView, GenreCreateView, GenreListView, GenreUpdateView, G
 from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID, ProjectListViewPublic
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet, SceneViewSetWithProjectID
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet
+from .views import DescriptionView, DescriptionCreateView, DescriptionListView, DescriptionUpdateView, DescriptionDeleteView
 from .views import UserView, UserCreateView, UserListView, UserUpdateView, UserDeleteView
 
 from rest_framework.routers import DefaultRouter
@@ -44,12 +45,17 @@ urlpatterns = [
     path('update/choice', ChoiceUpdateView.as_view(), name='choice_update'),
     path('delete/choice', ChoiceDeleteView.as_view(), name='choice_delete'),
 
+    path('description', DescriptionView.as_view()),
+    path('create/description', DescriptionCreateView.as_view(), name='description_create'),
+    path('list/description', DescriptionListView.as_view(), name='description_list'),
+    path('update/description', DescriptionUpdateView.as_view(), name='description_update'),
+    path('delete/description', DescriptionDeleteView.as_view(), name='description_delete'),
+
     # obtenção do token JWT
     path('token/', TokenObtainPairView.as_view(), name='token_pair'),
     # atualizar o token JWT
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
-
 
 router = DefaultRouter()
 router.register(r'project' , ProjectViewSet)

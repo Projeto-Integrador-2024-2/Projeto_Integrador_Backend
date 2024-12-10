@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Choice, Project, Scene, Genre
+from .models import Choice, Project, Scene, Genre, Description
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -85,4 +85,20 @@ class ChoiceSerializer(serializers.ModelSerializer):
         # Verifica se o texto não está vazio ou apenas com espaços
         if not value.strip():
             raise serializers.ValidationError("O texto da escolha não pode estar vazio.")
+        return value
+
+class DescriptionSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Permite associar a um usuário
+    description = serializers.CharField(max_length=500)  # Tamanho da descrição ajustável
+
+    class Meta:
+        model = Description
+        fields = ['user', 'description']
+
+    def create(self, validated_data):
+        return Description.objects.create(**validated_data)
+
+    def validate_description(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("A descrição não pode estar vazia.")
         return value
