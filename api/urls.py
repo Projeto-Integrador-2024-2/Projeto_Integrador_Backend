@@ -1,6 +1,7 @@
 from django.urls import path
+from .views import GenreView, GenreCreateView, GenreListView, GenreUpdateView, GenreDeleteView
 from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID
-from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet
+from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet, SceneViewSetWithProjectID
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet
 from .views import UserView, UserCreateView, UserListView, UserUpdateView, UserDeleteView
 
@@ -16,6 +17,12 @@ urlpatterns = [
     path('update/user', UserUpdateView.as_view(), name='user_list'),
     path('delete/user', UserDeleteView.as_view(), name='user_list'),
 
+    path('genre', GenreView.as_view()),
+    path('create/Genre', GenreCreateView.as_view(), name='Genre_Create'),
+    path('list/Genre', GenreListView.as_view(), name='Genre_list'),
+    path('update/Genre', GenreUpdateView.as_view(), name='Genre_update'),
+    path('delete/Genre', GenreDeleteView.as_view(), name='Genre_delete'),
+
     path('project', ProjectView.as_view()),
     path('create/project', ProjectCreateView.as_view(), name='create_project'),
     path('list/project', ProjectListView.as_view(), name='project_list'),
@@ -26,6 +33,7 @@ urlpatterns = [
     path('scene', SceneView.as_view()),
     path('create/scene', SceneCreateView.as_view(), name='scene_create'),
     path('list/scene', SceneListView.as_view(), name='scene_list'),
+    path('list/scene/<int:pk>/', SceneViewSetWithProjectID.as_view(), name='scene_list_ID'),
     path('update/scene', SceneUpdateView.as_view(), name='scene_update'),
     path('delete/scene', SceneDeleteView.as_view(), name='scene_delete'),
 

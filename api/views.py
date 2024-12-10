@@ -2,14 +2,20 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import serializers
-from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer
-from .models import Project, Scene, Choice
+from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer
+from .models import Project, Scene, Choice, Genre
 from django.views.generic import ListView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import generics
+from .models import Choice
+from .serializers import ChoiceSerializer
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -42,6 +48,28 @@ class UserUpdateView(generics.UpdateAPIView):
 class UserDeleteView(generics.DestroyAPIView): 
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+# Genre
+
+class GenreView(generics.RetrieveUpdateDestroyAPIView): 
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+
+class GenreCreateView(generics.CreateAPIView): 
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+
+class GenreListView(generics.ListAPIView): 
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+
+class GenreUpdateView(generics.UpdateAPIView): 
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+
+class GenreDeleteView(generics.DestroyAPIView): 
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
 
 # Project
     
@@ -92,7 +120,6 @@ class ProjectListView(generics.ListAPIView):
         return Project.objects.filter(user=self.request.user)
     
 class ProjectViewSetWithID(generics.ListAPIView): #Para endpoint
-
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
     permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
@@ -151,7 +178,6 @@ class ProjectDeleteView(generics.DestroyAPIView):
             return Response({'detail': 'Projeto não encontrado ou você não tem permissão para deletá-lo.'}, 
                             status=status.HTTP_404_NOT_FOUND)
 
-
 # Scenes
 
 class SceneViewSet(viewsets.ModelViewSet): #Para endpoint
@@ -169,6 +195,14 @@ class SceneCreateView(generics.CreateAPIView):
 class SceneListView(generics.ListAPIView):
     queryset = Scene.objects.all()
     serializer_class = SceneSerializer
+
+class SceneViewSetWithProjectID(generics.ListAPIView):
+    serializer_class = SceneSerializer
+
+    def get_queryset(self):
+        # Pega o parâmetro 'project_id' da URL
+        project_id = self.kwargs.get('pk')
+        return Scene.objects.filter(project_id=project_id)
 
 class SceneUpdateView(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
@@ -205,7 +239,6 @@ class SceneDeleteView(generics.DestroyAPIView):
 
 # Choice
 
-# Choice
 class ChoiceViewSet(viewsets.ModelViewSet):  # Para endpoints REST completos (CRUD)
     serializer_class = ChoiceSerializer
     queryset = Choice.objects.all()
@@ -225,12 +258,6 @@ class ChoiceCreateView(generics.CreateAPIView):
 class ChoiceListView(generics.ListAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
-
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import generics
-from .models import Choice
-from .serializers import ChoiceSerializer
 
 class ChoiceUpdateView(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
