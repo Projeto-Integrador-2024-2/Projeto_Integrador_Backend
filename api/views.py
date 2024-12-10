@@ -119,6 +119,15 @@ class ProjectListView(generics.ListAPIView):
         # Retorna apenas os projetos do usuário autenticado
         return Project.objects.filter(user=self.request.user)
     
+class ProjectListViewPublic(generics.ListAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+    def get_queryset(self):
+        # Retorna apenas os projetos públicos (privacy=False)
+        return Project.objects.filter(privacy=False)
+    
 class ProjectViewSetWithID(generics.ListAPIView): #Para endpoint
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()
