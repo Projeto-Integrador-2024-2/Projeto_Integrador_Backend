@@ -3,6 +3,7 @@ from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdat
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet
 from .views import UserView, UserCreateView, UserListView, UserUpdateView, UserDeleteView
+from .views import DescriptionCreate, DescriptionList, DescriptionUpdate
 
 from rest_framework.routers import DefaultRouter
 
@@ -39,6 +40,11 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_pair'),
     # atualizar o token JWT
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    path('list/description', DescriptionList.as_view(), name='description_list'),
+    path('create/description', DescriptionCreate.as_view(), name='description_create'),
+    path('uptade/description', DescriptionUpdate.as_view(), name='description_update'),
+    
 ]
 
 

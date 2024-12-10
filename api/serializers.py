@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Choice, Project, Scene
+from .models import Choice, Project, Scene, Description
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -82,3 +82,9 @@ class ChoiceSerializer(serializers.ModelSerializer):
         if not value.strip():
             raise serializers.ValidationError("O texto da escolha não pode estar vazio.")
         return value
+    
+class DescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Description
+        fields = ('user', 'id', 'description', 'create_in', 'update_in')
+        read_only_fields = ['id', 'create_in', 'update_in']

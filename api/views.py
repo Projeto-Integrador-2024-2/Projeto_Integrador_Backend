@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import serializers
-from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer
-from .models import Project, Scene, Choice
+from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer, DescriptionSerializer
+from .models import Project, Scene, Choice, Description
 from django.views.generic import ListView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
@@ -276,3 +276,19 @@ class ChoiceDeleteView(generics.DestroyAPIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Choice.DoesNotExist:
             return JsonResponse({'error': 'Escolha não encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+class DescriptionCreate(generics.CreateAPIView):
+    queryset = Description.objects.all()
+    serializer_class = DescriptionSerializer
+
+    def perform_create(self, serializer):
+        # Apenas salva o objeto sem restrições adicionais
+        serializer.save()
+        
+class DescriptionList(generics.ListAPIView):
+    queryset = Description.objects.all()
+    serializer_class = DescriptionSerializer
+    
+class DescriptionUpdate(generics.UpdateAPIView): 
+    serializer_class = DescriptionSerializer
+    queryset = Description.objects.all()

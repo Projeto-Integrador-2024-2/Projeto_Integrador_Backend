@@ -13,7 +13,7 @@ class Project(models.Model):
 
 class Scene(models.Model):
     #project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='scenes')  # Relacionamento obrigatório
-    name = models.CharField(max_length=255, default="")
+    name = models.CharField(max_length=255, default="") 
     url_background = models.CharField(max_length=255, default="", null=True)
     url_text_box = models.CharField(max_length=255, default="", null=True)
     url_character_left = models.CharField(max_length=255, default="", null=True)
@@ -25,3 +25,9 @@ class Choice(models.Model):
     text = models.CharField(max_length=255, default="")
     from_scene = models.ForeignKey(Scene, default='', on_delete=models.CASCADE, related_name='from_scene')
     to_scene = models.OneToOneField(Scene, null=True, on_delete=models.CASCADE, related_name='to_scene')
+    
+class Description(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, default='', on_delete=models.CASCADE, related_name="description")
+    description = models.TextField()
+    create_in = models.DateTimeField(auto_now_add=True)
+    update_in = models.DateTimeField(auto_now=True)
