@@ -16,33 +16,42 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)  # Garante que a senha será armazenada com hash
         user.save()
         return user
+    
+class SceneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scene
+        fields = ('id', 'name', 'url_background', 'url_text_box', 'url_character_left', 'url_character_middle', 'url_character_right', 'text')
 
 class ProjectSerializer(serializers.ModelSerializer):
-    first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
+    # Usando o SceneSerializer para incluir detalhes completos da first_scene
+    first_scene = SceneSerializer()
 
-    class Meta:
+    class Meta: 
         model = Project
         fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def create(self, validated_data):
-        return super().create(validated_data)
+        # Aqui, você pode acessar o campo 'first_scene' já como um dict completo
+        first_scene_data = validated_data.pop('first_scene')
+        first_scene = Scene.objects.create(**first_scene_data)  # Cria a cena se necessário
+        project = Project.objects.create(first_scene=first_scene, **validated_data)
+        return project
     
     def validate_first_scene(self, value):
-        # Verifica se a cena existe, mesmo que já seja um PrimaryKeyRelatedField
-        if not Scene.objects.filter(id=value.id).exists():
-            raise serializers.ValidationError("Cena não encontrada")
+        # Supondo que o valor seja um dict
+        if isinstance(value, dict):  # Verifica se value é um dict
+            scene_id = value.get('id', None)  # Use .get() para evitar erros
+            if scene_id is None:
+                raise serializers.ValidationError("ID não encontrado.")
         return value
+
 
     def validate_name(self, value):
         if not value.strip():
             raise serializers.ValidationError("O nome do projeto não pode estar vazio.")
         return value
 
-class SceneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Scene
-        fields = ('id', 'name', 'url_background', 'url_text_box', 'url_character_left', 'url_character_middle', 'url_character_right', 'text')
 
 class ChoiceSerializer(serializers.ModelSerializer):
     from_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
