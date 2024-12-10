@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0008_remove_project_private_project_privacy_and_more'),
+        #('api', '0008_remove_project_private_project_privacy_and_more'),
     ]
 
     operations = [

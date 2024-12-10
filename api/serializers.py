@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Choice, Project, Scene, Description
+from .models import Choice, Project, Scene, Genre, Description
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -17,6 +17,11 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ['id', 'name', 'description']
+
 class SceneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scene
@@ -28,8 +33,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta: 
         model = Project
-        fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'genres']
 
     def create(self, validated_data):
         # Aqui, você pode acessar o campo 'first_scene' já como um dict completo
@@ -51,7 +56,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         if not value.strip():
             raise serializers.ValidationError("O nome do projeto não pode estar vazio.")
         return value
-
 
 class ChoiceSerializer(serializers.ModelSerializer):
     from_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
