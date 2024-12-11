@@ -8,7 +8,7 @@ User = get_user_model()  # Obtém o modelo de usuário real definido em settings
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User  # Define o modelo de usuário
-        fields = ('id', 'username', 'password')  
+        fields = ('id', 'username', 'password', 'email')  
     
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -50,7 +50,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             if scene_id is None:
                 raise serializers.ValidationError("ID não encontrado.")
         return value
-
 
     def validate_name(self, value):
         if not value.strip():

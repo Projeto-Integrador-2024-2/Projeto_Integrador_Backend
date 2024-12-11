@@ -41,9 +41,26 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
-class UserUpdateView(generics.UpdateAPIView): 
+class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user_id = self.request.query_params.get('id')
+        if not user_id:
+            raise NotFound("O parâmetro 'id' é obrigatório.")
+        return get_object_or_404(self.queryset, id=user_id)
+
+    def get_queryset(self):
+        # Apenas permite ao usuário atualizar seu próprio perfil
+        return User.objects.filter(id=self.request.user.id)
+
+    def perform_update(self, serializer):
+        user = self.get_object()
+        if user != self.request.user:
+            raise PermissionDenied("Você não tem permissão para modificar este usuário.")
+        serializer.save()
 
 class UserDeleteView(generics.DestroyAPIView): 
     serializer_class = UserSerializer
@@ -315,69 +332,62 @@ class ChoiceDeleteView(generics.DestroyAPIView):
         
 # Description
 
-class DescriptionViewSet(viewsets.ModelViewSet):
+class DescriptionView(generics.RetrieveAPIView):
     """
-    ViewSet para listar, criar, atualizar e excluir descrições de usuários.
+    View para recuperar a descrição de um usuário específico.
     """
     serializer_class = DescriptionSerializer
-    queryset = Description.objects.all()
 
-class DescriptionView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    View para recuperar, atualizar ou excluir uma descrição de um usuário específico.
-    """
-    queryset = Description.objects.all()
-    serializer_class = DescriptionSerializer
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if not user_id:
+            return Description.objects.none()
+        return Description.objects.filter(user_id=user_id)
 
 class DescriptionCreateView(generics.CreateAPIView):
     """
     View para criar uma nova descrição para um usuário.
     """
-    queryset = Description.objects.all()
     serializer_class = DescriptionSerializer
+
+    def perform_create(self, serializer):
+        user_id = self.request.data.get('user_id')
+        if not user_id:
+            raise ValidationError({'error': 'O campo user_id é obrigatório.'})
+        serializer.save(user_id=user_id)
 
 class DescriptionListView(generics.ListAPIView):
     """
     View para listar todas as descrições.
     """
-    queryset = Description.objects.all()
     serializer_class = DescriptionSerializer
+
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            return Description.objects.filter(user_id=user_id)
+        return Description.objects.all()
 
 class DescriptionUpdateView(generics.UpdateAPIView):
     """
     View para atualizar a descrição de um usuário específico.
     """
-    def patch(self, request, *args, **kwargs):
-        description_id = request.query_params.get('id')  # Pega o 'id' da query string
-        if not description_id:
-            return Response({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+    serializer_class = DescriptionSerializer
 
-        try:
-            description = Description.objects.get(id=description_id)
-            # Atualize os campos com os dados recebidos no request.data
-            for attr, value in request.data.items():
-                setattr(description, attr, value)
-            description.save()
-
-            # Serializa a instância de 'description' para o formato JSON
-            serializer = DescriptionSerializer(description)
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Description.DoesNotExist:
-            return Response({'error': 'Descrição não encontrada'}, status=status.HTTP_404_NOT_FOUND)
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if not user_id:
+            return Description.objects.none()
+        return Description.objects.filter(user_id=user_id)
 
 class DescriptionDeleteView(generics.DestroyAPIView):
     """
-    View para excluir uma descrição de um usuário específico.
+    View para excluir a descrição de um usuário específico.
     """
-    def delete(self, request, *args, **kwargs):
-        description_id = request.query_params.get('id')  # Pega o 'id' da query string
-        if not description_id:
-            return JsonResponse({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+    serializer_class = DescriptionSerializer
 
-        try:
-            description = Description.objects.get(id=description_id)
-            description.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Description.DoesNotExist:
-            return JsonResponse({'error': 'Descrição não encontrada'}, status=status.HTTP_404_NOT_FOUND)
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if not user_id:
+            return Description.objects.none()
+        return Description.objects.filter(user_id=user_id)
