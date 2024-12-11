@@ -16,6 +16,13 @@ from rest_framework import generics
 from .models import Choice
 from .serializers import ChoiceSerializer
 from django.http import JsonResponse
+from rest_framework.exceptions import APIException
+
+class NotFound(APIException):
+    status_code = status.HTTP_204_NO_CONTENT
+    default_detail = "Nenhum conteúdo encontrado."
+    default_code = "no_content"
+
 
 # Create your views here.
 
@@ -284,6 +291,27 @@ class ChoiceCreateView(generics.CreateAPIView):
 class ChoiceListView(generics.ListAPIView):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
+    
+class ChoiceListViewWithProjectID(generics.ListAPIView):
+    serializer_class = ChoiceSerializer
+
+    def get_queryset(self):
+        # Obtém o ID do projeto dos parâmetros da URL
+        project_id = self.kwargs.get('project_id')
+        
+        if not project_id:
+            raise NotFound("O ID do projeto é obrigatório.")
+
+        # Filtra cenas relacionadas ao projeto
+        scenes = Scene.objects.filter(project_id=project_id)
+
+        # Filtra escolhas relacionadas às cenas filtradas
+        queryset = Choice.objects.filter(from_scene__in=scenes)
+
+        if not queryset.exists():
+            raise NotFound("Nenhuma escolha encontrada para o projeto especificado.")
+
+        return queryset
 
 class ChoiceUpdateView(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
