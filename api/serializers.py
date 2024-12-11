@@ -25,7 +25,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class SceneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scene
-        fields = ('id', 'name', 'url_background', 'url_text_box', 'url_character_left', 'url_character_middle', 'url_character_right', 'text')
+        fields = ('id', 'name', 'url_background', 'url_text_box', 'url_character_left', 'url_character_middle', 'url_character_right', 'text', 'project')
 
 class ProjectSerializer(serializers.ModelSerializer):
     # Usando o SceneSerializer para incluir detalhes completos da first_scene

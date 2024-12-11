@@ -2,7 +2,7 @@ from django.urls import path
 from .views import GenreView, GenreCreateView, GenreListView, GenreUpdateView, GenreDeleteView
 from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID, ProjectListViewPublic
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet, SceneViewSetWithProjectID
-from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet
+from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet, ChoiceListViewWithProjectID
 from .views import DescriptionView, DescriptionCreateView, DescriptionListView, DescriptionUpdateView, DescriptionDeleteView
 from .views import UserView, UserCreateView, UserListView, UserUpdateView, UserDeleteView
 
@@ -42,6 +42,7 @@ urlpatterns = [
     path('choice', ChoiceView.as_view()),
     path('create/choice', ChoiceCreateView.as_view(), name='choice_create'),
     path('list/choice', ChoiceListView.as_view(), name='choice_list'),
+    path('list/choice/<int:project_id>/', ChoiceListViewWithProjectID.as_view(), name='choice_list_project'),
     path('update/choice', ChoiceUpdateView.as_view(), name='choice_update'),
     path('delete/choice', ChoiceDeleteView.as_view(), name='choice_delete'),
 
