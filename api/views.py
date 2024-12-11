@@ -40,9 +40,17 @@ class UserView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
-class UserCreateView(generics.CreateAPIView): 
+class UserCreateView(generics.CreateAPIView):
+    """
+    View para criar um novo usuário e automaticamente associar uma descrição.
+    """
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        # Crie uma descrição automaticamente ao criar o usuário
+        Description.objects.create(user_id=user.id, description="Descrição padrão.")
 
 class UserListView(generics.ListAPIView): 
     serializer_class = UserSerializer
@@ -67,7 +75,17 @@ class UserUpdateView(generics.UpdateAPIView):
         user = self.get_object()
         if user != self.request.user:
             raise PermissionDenied("Você não tem permissão para modificar este usuário.")
+        
+        # Salva as alterações do usuário
         serializer.save()
+
+        # Atualiza ou cria a descrição se incluída no payload
+        description_text = self.request.data.get('description')
+        if description_text is not None:
+            description, created = Description.objects.update_or_create(
+                user_id=user.id,
+                defaults={'description': description_text},
+            )
 
 class UserDeleteView(generics.DestroyAPIView): 
     serializer_class = UserSerializer
