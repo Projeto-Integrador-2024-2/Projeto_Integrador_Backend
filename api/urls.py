@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GenreView, GenreCreateView, GenreListView, GenreUpdateView, GenreDeleteView
+from .views import CurrentUserView, GenreView, GenreCreateView, GenreListView, GenreUpdateView, GenreDeleteView
 from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID, ProjectListViewPublic
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet, SceneViewSetWithProjectID
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet, ChoiceListViewWithProjectID
@@ -17,6 +17,7 @@ urlpatterns = [
     path('list/user', UserListView.as_view(), name='user_list'),
     path('update/user', UserUpdateView.as_view(), name='user_list'),
     path('delete/user', UserDeleteView.as_view(), name='user_list'),
+    path('list/user/current', CurrentUserView.as_view(), name='user_current'),
 
     path('genre', GenreView.as_view()),
     path('create/Genre', GenreCreateView.as_view(), name='genre_Create'),

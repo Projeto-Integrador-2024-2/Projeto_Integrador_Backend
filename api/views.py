@@ -56,6 +56,13 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+class CurrentUserView(generics.RetrieveAPIView): 
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated] 
+    
+    def get_object(self): 
+        return self.request.user
+
 class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
