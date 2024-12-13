@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ['id', 'name', 'description']
+        fields = ['id', 'name']
 
 class SceneSerializer(serializers.ModelSerializer):
     class Meta:

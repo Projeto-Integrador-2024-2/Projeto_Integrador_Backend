@@ -20,10 +20,10 @@ urlpatterns = [
     path('list/user/current', CurrentUserView.as_view(), name='user_current'),
 
     path('genre', GenreView.as_view()),
-    path('create/Genre', GenreCreateView.as_view(), name='genre_Create'),
-    path('list/Genre', GenreListView.as_view(), name='genre_list'),
-    path('update/Genre', GenreUpdateView.as_view(), name='genre_update'),
-    path('delete/Genre', GenreDeleteView.as_view(), name='genre_delete'),
+    path('create/genre', GenreCreateView.as_view(), name='genre_Create'),
+    path('list/genre', GenreListView.as_view(), name='genre_list'),
+    path('update/genre', GenreUpdateView.as_view(), name='genre_update'),
+    path('delete/genre', GenreDeleteView.as_view(), name='genre_delete'),
 
     path('project', ProjectView.as_view()),
     path('create/project', ProjectCreateView.as_view(), name='create_project'),
