@@ -263,21 +263,23 @@ class SceneViewSetWithProjectID(generics.ListAPIView):
         return Scene.objects.filter(project_id=project_id)
 
 class SceneUpdateView(generics.UpdateAPIView):
+    serializer_class = SceneSerializer
+    queryset = Scene.objects.all()
+    lookup_field = 'pk'  # Altera o campo de busca para 'pk'
+
     def patch(self, request, *args, **kwargs):
-        scene_id = request.query_params.get('id')  # Pega o 'id' da query string
+        scene_id = request.query_params.get('pk')  # Pega o 'pk' da query string
         if not scene_id:
             return Response({'error': 'ID não fornecido'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            scene = Scene.objects.get(id=scene_id)
+            scene = self.get_queryset().get(id=scene_id)
             # Atualize os campos com os dados recebidos no request.data
             for attr, value in request.data.items():
                 setattr(scene, attr, value)
             scene.save()
 
-            # Serializa a instância de 'scene' para o formato JSON
-            serializer = SceneSerializer(scene)
-
+            serializer = self.get_serializer(scene)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Scene.DoesNotExist:
             return Response({'error': 'Cena não encontrada'}, status=status.HTTP_404_NOT_FOUND)
