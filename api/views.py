@@ -153,11 +153,25 @@ class ProjectCreateView(generics.CreateAPIView):
     serializer_class = ProjectSerializer
 
     def perform_create(self, serializer):
-        # Atribui o usuário logado ao projeto
+        # Salva o projeto primeiro
         user = self.request.user
-        # Garantir que o 'first_scene' seja corretamente mapeado
-        first_scene = serializer.validated_data.get('first_scene')  # Pega o ID da cena validado
-        serializer.save(user=user, first_scene=first_scene)
+        project = serializer.save(user=user)
+
+        # Cria a primeira cena associada ao projeto
+        first_scene = Scene.objects.create(
+            project=project,
+            name="-",
+            url_background="-",
+            url_text_box="-",
+            url_character_left="-",
+            url_character_middle="-",
+            url_character_right="-",
+            text="-",
+        )
+
+        # Atualiza o campo first_scene do projeto com a cena criada
+        project.first_scene = first_scene
+        project.save()
 
 class ProjectListView(generics.ListAPIView):
     queryset = Project.objects.all()

@@ -28,20 +28,12 @@ class SceneSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'url_background', 'url_text_box', 'url_character_left', 'url_character_middle', 'url_character_right', 'text', 'project')
 
 class ProjectSerializer(serializers.ModelSerializer):
-    # Usando o SceneSerializer para incluir detalhes completos da first_scene
-    first_scene = SceneSerializer()
+    first_scene = SceneSerializer(read_only=True)  # Somente leitura
 
     class Meta: 
         model = Project
         fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'genres']
-
-    def create(self, validated_data):
-        # Aqui, você pode acessar o campo 'first_scene' já como um dict completo
-        first_scene_data = validated_data.pop('first_scene')
-        first_scene = Scene.objects.create(**first_scene_data)  # Cria a cena se necessário
-        project = Project.objects.create(first_scene=first_scene, **validated_data)
-        return project
+        read_only_fields = ['id', 'created_at', 'updated_at', 'first_scene', 'genres']
     
     def validate_first_scene(self, value):
         # Supondo que o valor seja um dict
