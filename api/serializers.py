@@ -8,7 +8,8 @@ User = get_user_model()  # Obtém o modelo de usuário real definido em settings
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User  # Define o modelo de usuário
-        fields = ('id', 'username', 'password', 'email')  
+        fields = ('id', 'username', 'password', 'email', 'is_staff')
+        read_only_fields = ['is_staff']  
     
     def create(self, validated_data):
         password = validated_data.pop('password')
