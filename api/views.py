@@ -246,15 +246,25 @@ class ProjectDeleteView(generics.DestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         project_id = self.request.query_params.get('id')
-        
+
         try:
-            # Usar 'user' no lugar de 'owner'
-            project = Project.objects.get(id=project_id, user=request.user)  # Altere 'owner' para 'user'
-            project.delete()  # Deletar o projeto
-            return Response(status=status.HTTP_204_NO_CONTENT)  # Retornar sucesso
+            # Recupera o projeto pelo ID
+            project = Project.objects.get(id=project_id)
+
+            # Verifica se o usuário é o dono do projeto ou tem permissão de staff
+            if project.user == request.user or request.user.is_staff:
+                project.delete()  # Exclui o projeto
+                return Response(status=status.HTTP_204_NO_CONTENT)  # Retorna sucesso
+
+            # Retorna 403 se o usuário não tiver permissão
+            return Response({'detail': 'Você não tem permissão para deletar este projeto.'}, 
+                            status=status.HTTP_403_FORBIDDEN)
+
         except Project.DoesNotExist:
-            return Response({'detail': 'Projeto não encontrado ou você não tem permissão para deletá-lo.'}, 
+            # Retorna 404 se o projeto não for encontrado
+            return Response({'detail': 'Projeto não encontrado.'}, 
                             status=status.HTTP_404_NOT_FOUND)
+
 
 # Scenes
 
