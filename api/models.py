@@ -31,7 +31,7 @@ class Scene(models.Model):
 class Choice(models.Model):
     text = models.CharField(max_length=255, default="")
     from_scene = models.ForeignKey(Scene, default='', on_delete=models.CASCADE, related_name='from_scene')
-    to_scene = models.OneToOneField(Scene, null=True, on_delete=models.CASCADE, related_name='to_scene')
+    to_scene = models.ForeignKey(Scene, null=True, on_delete=models.CASCADE, related_name='to_scene')
 
 class Description(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="description")
