@@ -271,8 +271,16 @@ class SceneCreateView(generics.CreateAPIView):
     serializer_class = SceneSerializer
 
 class SceneListView(generics.ListAPIView):
-    queryset = Scene.objects.all()
     serializer_class = SceneSerializer
+
+    def get_queryset(self):
+        queryset = Scene.objects.all()
+        scene_id = self.request.query_params.get('id')  # Obtém o parâmetro 'id' da query string
+        
+        if scene_id:
+            queryset = queryset.filter(id=scene_id)  # Filtra apenas a cena com o ID fornecido
+
+        return queryset
 
 class SceneViewSetWithProjectID(generics.ListAPIView):
     serializer_class = SceneSerializer
