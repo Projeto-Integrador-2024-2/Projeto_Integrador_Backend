@@ -225,10 +225,14 @@ class ProjectUpdateView(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         project = self.get_object()
-        
+
+        # Verifica se o projeto pertence ao usuário autenticado
         if project.user != self.request.user:
             raise PermissionDenied("Você não tem permissão para modificar este projeto.")
         
+        # Atualiza os campos enviados sem alterar os não enviados
+        serializer.save()
+
         # Verifica se foi fornecido um novo ID de cena
         first_scene_id = self.request.data.get('first_scene')
         if first_scene_id:
@@ -237,24 +241,14 @@ class ProjectUpdateView(generics.UpdateAPIView):
                 first_scene = Scene.objects.get(id=first_scene_id)
                 
                 # Verifica se a cena já está associada a outro projeto
-                conflicting_projects = Project.objects.filter(first_scene=first_scene).exclude(id=project.id)
-                
-                # Adiciona um log para depuração
-                if conflicting_projects.exists():
-                    print("Conflito encontrado! Projetos associados a essa cena:")
-                    for conflicting_project in conflicting_projects:
-                        print(f"Projeto ID: {conflicting_project.id}, Nome: {conflicting_project.name}")
-                    
-                    # Lança a validação após mostrar os detalhes
+                if Project.objects.filter(first_scene=first_scene).exclude(id=project.id).exists():
                     raise ValidationError("Essa cena já está associada a outro projeto.")
                 
                 # Atualiza o campo first_scene
                 project.first_scene = first_scene
+                project.save()  # Salva a atualização do projeto
             except Scene.DoesNotExist:
                 raise ValidationError("Cena não encontrada.")
-        
-        # Atualiza o projeto com os novos dados
-        serializer.save()
 
 
 class ProjectDeleteView(generics.DestroyAPIView):

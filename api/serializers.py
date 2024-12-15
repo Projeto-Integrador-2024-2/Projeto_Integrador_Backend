@@ -51,16 +51,17 @@ class ProjectSerializer(serializers.ModelSerializer):
     
 class ProjectSerializerUpdate(serializers.ModelSerializer):
     first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
+    name = serializers.CharField(required=False)  # Não obrigatório
+    genres = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True, required=False)  # Ajuste para ManyToMany
 
-    class Meta: 
+    class Meta:
         model = Project
         fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres']
         read_only_fields = ['id', 'created_at', 'updated_at']
-    
+
     def validate_first_scene(self, value):
-        # Supondo que o valor seja um dict
         if isinstance(value, dict):  # Verifica se value é um dict
-            scene_id = value.get('id', None)  # Use .get() para evitar erros
+            scene_id = value.get('id', None)  # Usa .get() para evitar erros
             if scene_id is None:
                 raise serializers.ValidationError("ID não encontrado.")
         return value
