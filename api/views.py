@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import serializers
-from .serializers import ProjectSerializer, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer, DescriptionSerializer
+from .serializers import ProjectSerializer, ProjectSerializerUpdate, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer, DescriptionSerializer
 from .models import Project, Scene, Choice, Genre, Description
 from django.views.generic import ListView
 from django.contrib.auth import get_user_model
@@ -17,6 +17,7 @@ from .models import Choice
 from .serializers import ChoiceSerializer
 from django.http import JsonResponse
 from rest_framework.exceptions import APIException
+from rest_framework.exceptions import ValidationError
 
 class NotFound(APIException):
     status_code = status.HTTP_204_NO_CONTENT
@@ -209,7 +210,7 @@ class ProjectViewSetWithID(generics.ListAPIView): #Para endpoint
 
 class ProjectUpdateView(generics.UpdateAPIView):
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectSerializerUpdate
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -223,21 +224,38 @@ class ProjectUpdateView(generics.UpdateAPIView):
         return Project.objects.filter(user=self.request.user)
 
     def perform_update(self, serializer):
-        # Garantir que o projeto pertence ao usuário autenticado
         project = self.get_object()
+        
         if project.user != self.request.user:
             raise PermissionDenied("Você não tem permissão para modificar este projeto.")
-
-        # Pega o ID da nova cena (first_scene) caso seja passado no request
+        
+        # Verifica se foi fornecido um novo ID de cena
         first_scene_id = self.request.data.get('first_scene')
-
-        # Verifica se o ID foi passado e se a cena existe
         if first_scene_id:
-            first_scene = Scene.objects.get(id=first_scene_id)
-            serializer.save(first_scene=first_scene)
-        else:
-            # Se o campo first_scene não for passado, apenas atualiza o projeto
-            serializer.save()
+            try:
+                # Verifica se a cena existe
+                first_scene = Scene.objects.get(id=first_scene_id)
+                
+                # Verifica se a cena já está associada a outro projeto
+                conflicting_projects = Project.objects.filter(first_scene=first_scene).exclude(id=project.id)
+                
+                # Adiciona um log para depuração
+                if conflicting_projects.exists():
+                    print("Conflito encontrado! Projetos associados a essa cena:")
+                    for conflicting_project in conflicting_projects:
+                        print(f"Projeto ID: {conflicting_project.id}, Nome: {conflicting_project.name}")
+                    
+                    # Lança a validação após mostrar os detalhes
+                    raise ValidationError("Essa cena já está associada a outro projeto.")
+                
+                # Atualiza o campo first_scene
+                project.first_scene = first_scene
+            except Scene.DoesNotExist:
+                raise ValidationError("Cena não encontrada.")
+        
+        # Atualiza o projeto com os novos dados
+        serializer.save()
+
 
 class ProjectDeleteView(generics.DestroyAPIView):
     queryset = Project.objects.all()

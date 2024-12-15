@@ -34,7 +34,28 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Project
         fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'first_scene', 'genres']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'first_scene']
+    
+    def validate_first_scene(self, value):
+        # Supondo que o valor seja um dict
+        if isinstance(value, dict):  # Verifica se value é um dict
+            scene_id = value.get('id', None)  # Use .get() para evitar erros
+            if scene_id is None:
+                raise serializers.ValidationError("ID não encontrado.")
+        return value
+
+    def validate_name(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("O nome do projeto não pode estar vazio.")
+        return value
+    
+class ProjectSerializerUpdate(serializers.ModelSerializer):
+    first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
+
+    class Meta: 
+        model = Project
+        fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres']
+        read_only_fields = ['id', 'created_at', 'updated_at']
     
     def validate_first_scene(self, value):
         # Supondo que o valor seja um dict
