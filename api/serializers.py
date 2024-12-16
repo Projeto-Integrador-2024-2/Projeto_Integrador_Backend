@@ -50,7 +50,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         return value
     
 class ProjectSerializerUpdate(serializers.ModelSerializer):
-    first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=True)
+    first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=False)
     name = serializers.CharField(required=False)  # Não obrigatório
     genres = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True, required=False)  # Ajuste para ManyToMany
 
