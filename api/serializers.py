@@ -30,7 +30,8 @@ class SceneSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     first_scene = SceneSerializer(read_only=True)  # Somente leitura
-
+    genres = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True, required=False)  # Ajuste para ManyToMany
+    
     class Meta: 
         model = Project
         fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres']

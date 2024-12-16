@@ -21,11 +21,11 @@ class Project(models.Model):
 class Scene(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='scenes')
     name = models.CharField(max_length=255, default="")
-    url_background = models.CharField(max_length=255, default="", null=True)
-    url_text_box = models.CharField(max_length=255, default="", null=True)
-    url_character_left = models.CharField(max_length=255, default="", null=True)
-    url_character_middle = models.CharField(max_length=255, default="", null=True)
-    url_character_right = models.CharField(max_length=255, default="", null=True)
+    url_background = models.CharField(max_length=1023, default="", null=True)
+    url_text_box = models.CharField(max_length=1023, default="", null=True)
+    url_character_left = models.CharField(max_length=1023, default="", null=True)
+    url_character_middle = models.CharField(max_length=1023, default="", null=True)
+    url_character_right = models.CharField(max_length=1023, default="", null=True)
     text = models.CharField(max_length=255, default="", null=True)
 
 class Choice(models.Model):
