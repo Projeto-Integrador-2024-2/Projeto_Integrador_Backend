@@ -29,3 +29,20 @@ Para configurar e aplicar as migrações do banco de dados:
     ```bash
     py manage.py migrate
     ```
+
+### Entrar na ambiente virtual
+
+1. **Entre na pasta venv:**
+    ```bash
+    cd venv
+    ```
+
+2. **Ative o ambiente**
+    ```bash
+    source bin/activate
+    ```
+
+3. **Sair do ambiente**
+    ```bash
+    deactivate
+    ```
