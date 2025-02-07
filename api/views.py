@@ -250,7 +250,6 @@ class ProjectUpdateView(generics.UpdateAPIView):
             except Scene.DoesNotExist:
                 raise ValidationError("Cena não encontrada.")
 
-
 class ProjectDeleteView(generics.DestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer

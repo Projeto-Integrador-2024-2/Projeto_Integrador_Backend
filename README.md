@@ -4,6 +4,23 @@ Este projeto é uma integração entre o backend em Django e o frontend em JavaS
 
 ## Como Usar
 
+### Entrar na ambiente virtual
+
+1. **Ative o ambiente no linux**
+    ```bash
+    source myenv/bin/activate
+    ```
+
+2. **Ative o ambiente no windows**
+    ```bash
+    myenv\Scripts\activate
+    ```
+
+3. **Sair do ambiente**
+    ```bash
+    deactivate
+    ```
+
 ### Configuração do Backend
 
 1. **Instale as dependências do Django:**
@@ -14,6 +31,11 @@ Este projeto é uma integração entre o backend em Django e o frontend em JavaS
 2. **Execute o servidor de desenvolvimento do Django:**
     ```bash
     py manage.py runserver
+    ```
+
+3. **Execute o servidor de desenvolvimento do Django em uma porta expecifica:**
+    ```bash
+    python3 manage.py runserver 65535
     ```
 
 ### Migrações do Banco de Dados
@@ -28,21 +50,4 @@ Para configurar e aplicar as migrações do banco de dados:
 2. **Aplique as migrações:**
     ```bash
     py manage.py migrate
-    ```
-
-### Entrar na ambiente virtual
-
-1. **Entre na pasta venv:**
-    ```bash
-    cd venv
-    ```
-
-2. **Ative o ambiente**
-    ```bash
-    source bin/activate
-    ```
-
-3. **Sair do ambiente**
-    ```bash
-    deactivate
     ```

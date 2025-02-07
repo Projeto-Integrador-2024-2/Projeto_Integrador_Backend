@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -73,7 +72,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / "ProjetoIntegradorFrontend" / "templates",  # Caminho para os templates do frontend
+            BASE_DIR / "Projeto_Integrador_Frontend" / "templates",  # Caminho para os templates do frontend
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -143,5 +142,5 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "../ProjetoIntegradorFrontend" / "static",
+    BASE_DIR / "../Projeto_Integrador_Frontend" / "static",
 ]
