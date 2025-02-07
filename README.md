@@ -6,6 +6,11 @@ Este projeto é uma integração entre o backend em Django e o frontend em JavaS
 
 ### Entrar na ambiente virtual
 
+**Criando ambiente no linux**
+```bash
+virtualenv -p python3 venv/
+```
+
 1. **Ative o ambiente no linux**
     ```bash
     source myenv/bin/activate
