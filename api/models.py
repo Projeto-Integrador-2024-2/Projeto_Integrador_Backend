@@ -33,6 +33,32 @@ class Choice(models.Model):
     from_scene = models.ForeignKey(Scene, null=True, on_delete=models.CASCADE, related_name='from_scene')
     to_scene = models.ForeignKey(Scene, null=True, on_delete=models.CASCADE, related_name='to_scene')
 
+class Grade(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="grades",
+        verbose_name="Usuário"
+    )
+    project = models.ForeignKey(
+        'Project',
+        on_delete=models.CASCADE,
+        related_name="grades",
+        verbose_name="Projeto"
+    )
+    grade_value = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name="Nota",
+        help_text="Insira uma nota de 0 a 100"
+    )
+    feedback = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Feedback",
+        help_text="Comentários sobre o desempenho do projeto"
+    )
+
 class Description(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="description")
     description = models.CharField(max_length=500)  # Ajuste o tamanho conforme necessário
