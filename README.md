@@ -4,16 +4,16 @@ Este projeto é uma integração entre o backend em Django e o frontend em JavaS
 
 ## Como Usar
 
-### Entrar na ambiente virtual
 
 **Criando ambiente no linux**
 ```bash
 virtualenv -p python3 venv/
 ```
+### Entrar na ambiente virtual
 
 1. **Ative o ambiente no linux**
     ```bash
-    source myenv/bin/activate
+    source venv/bin/activate
     ```
 
 2. **Ative o ambiente no windows**
@@ -35,7 +35,7 @@ virtualenv -p python3 venv/
 
 2. **Execute o servidor de desenvolvimento do Django:**
     ```bash
-    py manage.py runserver
+    py manage.py runserver 
     ```
 
 3. **Execute o servidor de desenvolvimento do Django em uma porta expecifica:**
