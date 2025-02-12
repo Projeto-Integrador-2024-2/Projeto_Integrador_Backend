@@ -61,7 +61,7 @@ urlpatterns = [
     path('update/grade', GradeUpdateView.as_view(), name='grade_update'),
     path('delete/grade', GradeDeleteView.as_view(), name='grade_delete'),
     #GET /grade/ → Recupera um único objeto (com pk na requisição)
-    #POST /create/grade/ → Cria um novo Grade
+    #POST /create/grade/PROJECT_ID → Cria um novo Grade de acordo com ID
     #GET /list/grade/ → Lista todas as notas (Grade)
     #PUT /update/grade/ → Atualiza um Grade
     #DELETE /delete/grade/ → Remove um Grad

@@ -504,7 +504,28 @@ class GradeView(generics.RetrieveUpdateDestroyAPIView):
 class GradeCreateView(generics.CreateAPIView):
     serializer_class = GradeSerializer
     queryset = Grade.objects.all()
-    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+    def perform_create(self, serializer):
+        # Obtém o ID do projeto e do usuário do payload
+        project_id = self.request.data.get('project')
+        user_id = self.request.data.get('user')
+
+        # Verifica se o projeto existe
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            raise ValidationError("Projeto não encontrado.")
+
+        # Verifica se o ID do usuário corresponde ao usuário autenticado
+        if user_id != self.request.user.id:
+            raise ValidationError("Você não pode avaliar em nome de outro usuário.")
+
+        # Verifica se o usuário já avaliou o projeto
+        if Grade.objects.filter(user=self.request.user, project=project).exists():
+            raise ValidationError("Você já avaliou este projeto.")
+
+        # Cria a avaliação associando o usuário autenticado e o projeto
+        serializer.save(user=self.request.user, project=project)
 
 class GradeListView(generics.ListAPIView):
     serializer_class = GradeSerializer

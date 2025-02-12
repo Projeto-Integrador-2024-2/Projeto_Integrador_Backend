@@ -131,3 +131,13 @@ class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
         fields = ['id', 'user', 'project', 'grade_value', 'feedback']
+        extra_kwargs = {
+            'user': {'required': False},  # O user será tratado na view
+            'feedback': {'required': False},  # O feedback pode ser opcional
+        }
+
+    def validate_grade_value(self, value):
+        """Validação para garantir que a nota seja entre 0 e 100 com 2 casas decimais"""
+        if value < 0 or value > 100:
+            raise serializers.ValidationError("A nota deve estar entre 0 e 100.")
+        return value
