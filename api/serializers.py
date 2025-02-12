@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Choice, Project, Scene, Genre, Description, Grade
 from django.conf import settings
+from django.db.models import Avg
 from django.contrib.auth import get_user_model
 
 User = get_user_model()  # Obtém o modelo de usuário real definido em settings.AUTH_USER_MODEL
@@ -31,11 +32,12 @@ class SceneSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     first_scene = SceneSerializer(read_only=True)  # Somente leitura
     genres = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True, required=False)  # Ajuste para ManyToMany
-    
+    average_grade = serializers.SerializerMethodField()  # Adicionando o campo corretamente
+
     class Meta: 
         model = Project
-        fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'first_scene']
+        fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres', 'average_grade']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'first_scene', 'average_grade']
     
     def validate_first_scene(self, value):
         # Supondo que o valor seja um dict
@@ -49,6 +51,13 @@ class ProjectSerializer(serializers.ModelSerializer):
         if not value.strip():
             raise serializers.ValidationError("O nome do projeto não pode estar vazio.")
         return value
+    
+    def get_average_grade(self, obj):
+        #print(f"#{obj.id} : ", Grade.objects.filter(project=obj))
+        #print(f"Aggregate Result: {average_query}")
+        average_query = Grade.objects.filter(project=obj).exclude(grade_value__isnull=True).filter(grade_value__gte=0).aggregate(Avg('grade_value'))
+        average = Grade.objects.filter(project=obj).aggregate(Avg('grade_value'))['grade_value__avg']
+        return round(average, 2) if average is not None else 0.0
     
 class ProjectSerializerUpdate(serializers.ModelSerializer):
     first_scene = serializers.PrimaryKeyRelatedField(queryset=Scene.objects.all(), required=False)
