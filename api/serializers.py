@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Choice, Project, Scene, Genre, Description
+from .models import Choice, Project, Scene, Genre, Description, Grade
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -117,3 +117,8 @@ class DescriptionSerializer(serializers.ModelSerializer):
         if not value.strip():
             raise serializers.ValidationError("A descrição não pode estar vazia.")
         return value
+    
+class GradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Grade
+        fields = ['id', 'user', 'project', 'grade_value', 'feedback']

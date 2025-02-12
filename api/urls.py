@@ -1,10 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from .views import CurrentUserView, GenreView, GenreCreateView, GenreListView, GenreUpdateView, GenreDeleteView
 from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID, ProjectListViewPublic
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet, SceneViewSetWithProjectID
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet, ChoiceListViewWithProjectID
 from .views import DescriptionView, DescriptionCreateView, DescriptionListView, DescriptionUpdateView, DescriptionDeleteView
 from .views import UserView, UserCreateView, UserListView, UserUpdateView, UserDeleteView
+from .views import GradeCreateView, GradeDeleteView, GradeListView, GradeUpdateView, GradeView
 
 from rest_framework.routers import DefaultRouter
 
@@ -53,6 +54,18 @@ urlpatterns = [
     path('update/description', DescriptionUpdateView.as_view(), name='description_update'),
     path('delete/description', DescriptionDeleteView.as_view(), name='description_delete'),
 
+    # Rotas para Grade
+    path('grade', GradeView.as_view(), name='grade_detail'),
+    path('create/grade', GradeCreateView.as_view(), name='grade_create'),
+    path('list/grade', GradeListView.as_view(), name='grade_list'),
+    path('update/grade', GradeUpdateView.as_view(), name='grade_update'),
+    path('delete/grade', GradeDeleteView.as_view(), name='grade_delete'),
+    #GET /grade/ → Recupera um único objeto (com pk na requisição)
+    #POST /create/grade/ → Cria um novo Grade
+    #GET /list/grade/ → Lista todas as notas (Grade)
+    #PUT /update/grade/ → Atualiza um Grade
+    #DELETE /delete/grade/ → Remove um Grad
+    
     # obtenção do token JWT
     path('token/', TokenObtainPairView.as_view(), name='token_pair'),
     # atualizar o token JWT

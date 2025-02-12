@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import serializers
-from .serializers import ProjectSerializer, ProjectSerializerUpdate, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer, DescriptionSerializer
-from .models import Project, Scene, Choice, Genre, Description
+from .serializers import ProjectSerializer, ProjectSerializerUpdate, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer, DescriptionSerializer, GradeSerializer
+from .models import Project, Scene, Choice, Genre, Description, Grade
 from django.views.generic import ListView
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
@@ -495,3 +495,29 @@ class DescriptionDeleteView(generics.DestroyAPIView):
         if not user_id:
             return Description.objects.none()
         return Description.objects.filter(user_id=user_id)
+    
+class GradeView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = GradeSerializer
+    queryset = Grade.objects.all()
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+class GradeCreateView(generics.CreateAPIView):
+    serializer_class = GradeSerializer
+    queryset = Grade.objects.all()
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+class GradeListView(generics.ListAPIView):
+    serializer_class = GradeSerializer
+    queryset = Grade.objects.all()
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+class GradeUpdateView(generics.UpdateAPIView):
+    serializer_class = GradeSerializer
+    queryset = Grade.objects.all()
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+
+class GradeDeleteView(generics.DestroyAPIView):
+    serializer_class = GradeSerializer
+    queryset = Grade.objects.all()
+    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+      
