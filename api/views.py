@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.response import Response
+#from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
 from .models import Choice
@@ -20,10 +20,24 @@ from rest_framework.exceptions import APIException
 from rest_framework.exceptions import ValidationError
 
 class NotFound(APIException):
-    status_code = status.HTTP_204_NO_CONTENT
-    default_detail = "Nenhum conteúdo encontrado."
-    default_code = "no_content"
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = "Recurso não encontrado."
+    default_code = "not_found"
 
+class BadRequest(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = "Requisição inválida."
+    default_code = "bad_request"
+
+class Forbidden(APIException):
+    status_code = status.HTTP_403_FORBIDDEN
+    default_detail = "Acesso negado."
+    default_code = "forbidden"
+
+class Conflict(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = "Conflito de dados."
+    default_code = "conflict"
 
 # Create your views here.
 
@@ -514,18 +528,19 @@ class GradeCreateView(generics.CreateAPIView):
         try:
             project = Project.objects.get(id=project_id)
         except Project.DoesNotExist:
-            raise ValidationError("Projeto não encontrado.")
+            raise NotFound("Projeto não encontrado.")
 
         # Verifica se o ID do usuário corresponde ao usuário autenticado
         if user_id != self.request.user.id:
-            raise ValidationError("Você não pode avaliar em nome de outro usuário.")
+            raise Forbidden("Você não pode avaliar em nome de outro usuário.")
 
         # Verifica se o usuário já avaliou o projeto
         if Grade.objects.filter(user=self.request.user, project=project).exists():
-            raise ValidationError("Você já avaliou este projeto.")
+            raise Conflict("Você já avaliou este projeto.")
 
         # Cria a avaliação associando o usuário autenticado e o projeto
         serializer.save(user=self.request.user, project=project)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class GradeListView(generics.ListAPIView):
     serializer_class = GradeSerializer
