@@ -550,7 +550,50 @@ class GradeListView(generics.ListAPIView):
 class GradeUpdateView(generics.UpdateAPIView):
     serializer_class = GradeSerializer
     queryset = Grade.objects.all()
-    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'project_id'  # Campo usado para buscar a avaliação
+
+    def get_object(self):
+        """
+        Sobrescreve o método get_object para buscar a avaliação com base no project_id.
+        """
+        project_id = self.kwargs.get('project_id')
+        user = self.request.user
+
+        try:
+            # Verifica se o projeto existe
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            raise NotFound("Projeto não encontrado.")
+
+        # Busca a avaliação do usuário para o projeto especificado
+        try:
+            grade = Grade.objects.get(project=project, user=user)
+        except Grade.DoesNotExist:
+            raise NotFound("Avaliação não encontrada.")
+
+        return grade
+
+    def perform_update(self, serializer):
+        """
+        Sobrescreve o método perform_update para adicionar validações personalizadas.
+        """
+        user = self.request.user
+        project_id = self.kwargs.get('project_id')
+
+        # Verifica se o projeto existe
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            raise NotFound("Projeto não encontrado.")
+
+        # Verifica se o usuário está tentando atualizar sua própria avaliação
+        grade = self.get_object()
+        if grade.user != user:
+            raise Forbidden("Você não pode atualizar a avaliação de outro usuário.")
+
+        # Atualiza a avaliação
+        serializer.save()
 
 class GradeDeleteView(generics.DestroyAPIView):
     serializer_class = GradeSerializer
