@@ -29,6 +29,22 @@ class SceneSerializer(serializers.ModelSerializer):
         model = Scene
         fields = ('id', 'name', 'url_background', 'url_text_box', 'url_character_left', 'url_character_middle', 'url_character_right', 'text', 'project')
 
+class ProjectWithGradeSerializer(serializers.ModelSerializer):
+    first_scene = SceneSerializer(read_only=True)  # Somente leitura
+    user_grade = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'privacy', 'created_at', 'updated_at', 'first_scene', 'genres', 'user_grade']
+
+    def get_user_grade(self, obj):
+        user = self.context['request'].user
+        try:
+            grade = Grade.objects.get(project=obj, user=user)
+            return grade.grade_value
+        except Grade.DoesNotExist:
+            return None
+
 class ProjectSerializer(serializers.ModelSerializer):
     first_scene = SceneSerializer(read_only=True)  # Somente leitura
     genres = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all(), many=True, required=False)  # Ajuste para ManyToMany
@@ -55,7 +71,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_average_grade(self, obj):
         #print(f"#{obj.id} : ", Grade.objects.filter(project=obj))
         #print(f"Aggregate Result: {average_query}")
-        average_query = Grade.objects.filter(project=obj).exclude(grade_value__isnull=True).filter(grade_value__gte=0).aggregate(Avg('grade_value'))
+        #average_query = Grade.objects.filter(project=obj).exclude(grade_value__isnull=True).filter(grade_value__gte=0).aggregate(Avg('grade_value'))
         average = Grade.objects.filter(project=obj).aggregate(Avg('grade_value'))['grade_value__avg']
         return round(average, 2) if average is not None else 0.0
     

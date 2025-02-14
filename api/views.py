@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import serializers
-from .serializers import ProjectSerializer, ProjectSerializerUpdate, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer, DescriptionSerializer, GradeSerializer
+from .serializers import ProjectWithGradeSerializer, ProjectSerializer, ProjectSerializerUpdate, SceneSerializer, ChoiceSerializer, UserSerializer, GenreSerializer, DescriptionSerializer, GradeSerializer
 from .models import Project, Scene, Choice, Genre, Description, Grade
 from django.views.generic import ListView
 from django.contrib.auth import get_user_model
@@ -211,6 +211,33 @@ class ProjectListViewPublic(generics.ListAPIView):
         if user.is_staff:  # Verifica se o usuário tem cargo de staff
             return Project.objects.all()  # Retorna todos os projetos
         return Project.objects.filter(privacy=False)  # Retorna apenas os projetos públicos
+    
+class ProjectsRatedByUserView(generics.ListAPIView):
+    serializer_class = ProjectWithGradeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Retorna os projetos que o usuário autenticado já avaliou.
+        Se o usuário não for staff, retorna apenas os projetos públicos.
+        """
+        user = self.request.user
+
+        # Filtra as avaliações feitas pelo usuário
+        user_grades = Grade.objects.filter(user=user)
+
+        # Obtém os projetos associados a essas avaliações
+        rated_projects = Project.objects.filter(id__in=user_grades.values('project'))
+
+        # Aplica a lógica de privacidade
+        if not user.is_staff:
+            rated_projects = rated_projects.filter(privacy=False)
+
+        return rated_projects
+
+    def get_serializer_context(self):
+        # Passa o request para o serializer
+        return {'request': self.request}
     
 class ProjectViewSetWithID(generics.ListAPIView): #Para endpoint
     serializer_class = ProjectSerializer
@@ -597,6 +624,37 @@ class GradeUpdateView(generics.UpdateAPIView):
 
 class GradeDeleteView(generics.DestroyAPIView):
     serializer_class = GradeSerializer
-    queryset = Grade.objects.all()
-    permission_classes = [IsAuthenticated]  # Apenas usuários autenticados podem acessar
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'project_id'  # Usa project_id como campo de busca
+
+    def get_queryset(self):
+        """
+        Retorna o queryset das avaliações do usuário autenticado.
+        """
+        user = self.request.user
+        return Grade.objects.filter(user=user)
+
+    def get_object(self):
+        """
+        Busca a avaliação com base no project_id e verifica se o usuário é o dono.
+        """
+        project_id = self.kwargs.get('project_id')  # Obtém o project_id da URL
+        user = self.request.user
+
+        try:
+            # Busca a avaliação do usuário para o projeto especificado
+            grade = Grade.objects.get(project_id=project_id, user=user)
+        except Grade.DoesNotExist:
+            raise NotFound("Avaliação não encontrada.")
+
+        return grade
+
+    def perform_destroy(self, instance):
+        """
+        Exclui a avaliação após verificar se o usuário é o dono.
+        """
+        if instance.user != self.request.user:
+            raise PermissionDenied("Você não tem permissão para excluir esta avaliação.")
+
+        instance.delete()
       

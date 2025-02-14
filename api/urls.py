@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import CurrentUserView, GenreView, GenreCreateView, GenreListView, GenreUpdateView, GenreDeleteView
-from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID, ProjectListViewPublic
+from .views import ProjectView, ProjectCreateView, ProjectListView, ProjectUpdateView, ProjectDeleteView, ProjectViewSet, ProjectViewSetWithID, ProjectListViewPublic, ProjectsRatedByUserView
 from .views import SceneView, SceneCreateView, SceneListView, SceneUpdateView, SceneDeleteView, SceneViewSet, SceneViewSetWithProjectID
 from .views import ChoiceView, ChoiceCreateView, ChoiceListView, ChoiceUpdateView, ChoiceDeleteView, ChoiceViewSet, ChoiceListViewWithProjectID
 from .views import DescriptionView, DescriptionCreateView, DescriptionListView, DescriptionUpdateView, DescriptionDeleteView
@@ -33,6 +33,7 @@ urlpatterns = [
     path('list/project/<int:pk>/', ProjectViewSetWithID.as_view(), name='project_list_ID'),
     path('update/project', ProjectUpdateView.as_view(), name='project_update'),
     path('delete/project', ProjectDeleteView.as_view(), name='project_delete'),
+    path('list/project/rated', ProjectsRatedByUserView.as_view(), name='rated-project-list' ),
 
     path('scene', SceneView.as_view()),
     path('create/scene', SceneCreateView.as_view(), name='scene_create'),
@@ -59,7 +60,7 @@ urlpatterns = [
     path('create/grade', GradeCreateView.as_view(), name='grade_create'),
     path('list/grade', GradeListView.as_view(), name='grade_list'),
     path('update/grade/<int:project_id>/', GradeUpdateView.as_view(), name='grade_update'),
-    path('delete/grade', GradeDeleteView.as_view(), name='grade_delete'),
+    path('grades/delete/<int:project_id>/', GradeDeleteView.as_view(), name='grade_delete'),
     #GET /grade/ → Recupera um único objeto (com pk na requisição)
     #POST /create/grade/PROJECT_ID → Cria um novo Grade de acordo com ID
     #GET /list/grade/ → Lista todas as notas (Grade)
